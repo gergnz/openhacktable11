@@ -105,11 +105,11 @@ func GetServerInfo() [] Server {
 	fmt.Printf("Hello")
 	fmt.Printf("Servers : %+v", servers)
 
-	for index,_ := range servers {
-		url := servers[index].Endpoints.Minecraft
-		servers[index].Players.Capacity = 20
-		servers[index].Players.Current = 20
-	}
+	//for index,_ := range servers {
+	//	url := servers[index].Endpoints.Minecraft
+	//	servers[index].Players.Capacity = 20
+	//	servers[index].Players.Current = 20
+	//}
 
 	return servers
 }
