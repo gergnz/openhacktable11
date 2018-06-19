@@ -9,6 +9,13 @@ $(document).ready(function(){
       success: function(data, textStatus, jqXHR){
         drawTable(data);
     }});
+    $("#refresh").click(function(){
+      $.ajax({url: "/list",
+        success: function(data, textStatus, jqXHR){
+          $("#MinecraftDataTable").find("tr:gt(0)").remove();
+          drawTable(data);
+      }});
+    });
     $("#add").click(function(){
         $.ajax({url: "/add/" + $("#unique_name").val(), success: function(result){
             $("#div1").html(result);
@@ -60,6 +67,7 @@ function drawRow(rowData) {
 
 <hr class="my-4">
 
+<button type="submit" class="btn btn-outline-secondary" id="refresh">Refresh</button>
 <table id="MinecraftDataTable" class="table">
     <tr>
         <th>Name</th>
