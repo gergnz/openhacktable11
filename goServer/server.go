@@ -51,9 +51,21 @@ type Endpoint struct {
 	Rcon string `json:"remote-console"`
 }
 
+type Players struct {
+	Capacity int `json:"max"`
+	Current int `json:"now"`
+}
+
+type Status struct {
+	Load Players `json:"players"`
+}
+
 type Server struct {
 	Name string `json:"name"`
 	Endpoints Endpoint `json:"endpoints"`
+	Players Players
+//	Capacity int
+//	Current int
 }
 
 func main3() {
@@ -93,8 +105,42 @@ func GetServerInfo() [] Server {
 	fmt.Printf("Hello")
 	fmt.Printf("Servers : %+v", servers)
 
+	for index,_ := range servers {
+		url := servers[index].Endpoints.Minecraft
+		servers[index].Players.Capacity = 20
+		servers[index].Players.Current = 20
+	}
+
 	return servers
 }
+
+func GetServerStatus(url string) Status {
+	spaceClient := http.Client{
+		Timeout: time.Second * 2, // Maximum of 2 secs
+	}
+
+	req, err := http.NewRequest(http.MethodGet, url, nil)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	req.Header.Set("User-Agent", "spacecount-tutorial")
+
+	res, getErr := spaceClient.Do(req)
+	if getErr != nil {
+		log.Fatal(getErr)
+	}
+
+	body, readErr := ioutil.ReadAll(res.Body)
+	if readErr != nil {
+		log.Fatal(readErr)
+	}
+
+	var status Status
+	json.Unmarshal(body, &status)
+	return status
+}
+
 
 func main4() {
 	GetServerInfo()
@@ -112,4 +158,14 @@ func test2() {
 
 func main5() {
 	test2()
+}
+
+// {"status":"success","online":true,"motd":"A Minecraft Server Powered by Docker","error":"","players":{"max":20,"now":0},"server":{"name":"1.12.2","protocol":340},"last_online":"1529386757","last_updated":"1529386757","duration":453773875}
+
+
+func GetStatus() Status {
+	text := `{"status":"success","online":true,"motd":"A Minecraft Server Powered by Docker","error":"","players":{"max":20,"now":0},"server":{"name":"1.12.2","protocol":340},"last_online":"1529386757","last_updated":"1529386757","duration":453773875}`
+	var status Status
+	json.Unmarshal([]byte(text), &status)
+	return status
 }
