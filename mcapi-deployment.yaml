@@ -1,0 +1,18 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: mcapi
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: mcapi
+    spec:
+      containers:
+      - name: mcapi
+        image: gergnz/openhacktable11:0.8
+        ports:
+        - name: mcapi
+          containerPort: 5002
+          protocol: TCP

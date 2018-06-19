@@ -3,6 +3,7 @@ from flask_restful import Resource, Api
 from kubernetes import client, config
 from pprint import pprint
 import json
+import os
 app = Flask(__name__)
 api = Api(app)
 
@@ -10,7 +11,10 @@ api = Api(app)
 class List(Resource):
     def get(self):
         output = []
-        config.load_kube_config()
+        if os.path.isfile('/run/secrets/kubernetes.io/serviceaccount/..data/namespace'):
+            config.load_incluster_config()
+        else:
+            config.load_kube_config()
         v1 = client.CoreV1Api()
         ret = v1.list_namespaced_service('default')
 
