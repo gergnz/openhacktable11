@@ -114,10 +114,25 @@ class Add(Resource):
         service_status = create_service(coreV1,service_obj)
         return status + "\n" + service_status
 
+def delete_deployment(api_instance,unique_name):
+    # Delete deployment
+    api_response = api_instance.delete_namespaced_deployment(
+        name=unique_name,
+        namespace="default",
+        body=client.V1DeleteOptions(
+            propagation_policy='Foreground',
+            grace_period_seconds=5))
+    return "Deployment deleted. status={}".format(str(api_response.status))
+
 class Delete(Resource):
     def get(self,unique_name):
-
-       return "Deleting " + unique_name
+        if os.path.isfile('/run/secrets/kubernetes.io/serviceaccount/..data/namespace'):
+            config.load_incluster_config()
+        else:
+            config.load_kube_config()
+        extensions_v1beta1 = client.ExtensionsV1beta1Api()
+        status = delete_deployment(extensions_v1beta1,unique_name)
+        return status
 
 class Ping(Resource):
     def get(self):
