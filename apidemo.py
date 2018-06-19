@@ -29,10 +29,15 @@ class Delete(Resource):
     def get(self):
         return "Deleting a new resource"
 
+class Ping(Resource):
+    def get(self):
+        return "ack"
+
 api.add_resource(List, '/list')
 api.add_resource(Add, '/add')
 api.add_resource(Delete,'/delete')
+api.add_resource(Pint,'/ping')
 
 
 if __name__ == '__main__':
-     app.run(port='5002')
+     app.run(port='5002',host='0.0.0.0')
