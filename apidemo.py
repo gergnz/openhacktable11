@@ -1,15 +1,26 @@
 from flask import Flask
-from kubernetes import client, config
+from flask_restful import Resource, Api
 
 app = Flask(__name__)
+api = Api(app)
 
-class list:
-    def list(self):
-        output = ""
-        v1 = client.CoreV1Api()
-        ret = v1.list_pod_for_all_namespaces(watch=False)
-        for i in ret.items:
-            output = output + i.status.pod_ip + i.metadata.namespace + i.metadata.name
-            break
 
-        return output
+class List(Resource):
+    def get(self):
+        return "Showing the resources"
+
+class Add(Resource):
+    def get(self):
+        return "Adding a new resource"
+
+class Delete(Resource):
+    def get(self):
+        return "Deleting a new resource"
+
+api.add_resource(List, '/list')
+api.add_resource(Add, '/add')
+api.add_resource(Delete,'/delete')
+
+
+if __name__ == '__main__':
+     app.run(port='5002')
