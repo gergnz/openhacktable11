@@ -1,4 +1,5 @@
 from flask import Flask
+from flask import render_template
 from flask_restful import Resource, Api
 from kubernetes import client, config
 from pprint import pprint
@@ -153,11 +154,15 @@ class Ping(Resource):
     def get(self):
         return "ack"
 
+@app.route('/')
+@app.route('/index')
+def index():
+    return render_template('index.html')
+
 api.add_resource(List, '/list')
 api.add_resource(Add, '/add/<unique_name>')
 api.add_resource(Delete,'/delete/<unique_name>')
 api.add_resource(Ping,'/ping')
-
 
 if __name__ == '__main__':
      app.run(port='5002',host='0.0.0.0')

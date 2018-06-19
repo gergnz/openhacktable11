@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script>
+$(document).ready(function(){
+    $.ajax({url: "/list",
+      success: function(data, textStatus, jqXHR){
+        drawTable(data);
+    }});
+    $("button").click(function(){
+        $.ajax({url: "/add/test2", success: function(result){
+            $("#div1").html(result);
+        }});
+    });
+});
+function drawTable(data) {
+  for (var i=0; i<data.length; i++) {
+    drawRow(data[i])
+  }
+}
+function drawRow(rowData) {
+  var row = $("<tr />")
+  $("#MinecraftDataTable").append(row);
+  row.append($("<td>" + rowData.name + "</td>"));
+  row.append($("<td>" + rowData.endpoints.minecraft + "</td>"));
+  row.append($("<td>" + rowData.endpoints.rcon + "</td>"));
+  row.append($("<td><form action='/delete/" + rowData.name + "' ><button>Delete</button></form></td>"));
+}
+
+</script>
+</head>
+<body>
+
+<h2>Minecraft Servers</h2>
+
+<table id="MinecraftDataTable" border=1>
+    <tr>
+        <th>Name</th>
+        <th>Minecraft Endpoint</th>
+        <th>Remote Console Endpoint</th>
+        <th>Delete</th>
+    </tr>
+    
+</table>
+<br>&nbsp;
+<br>&nbsp;
+<br>&nbsp;
+<button>Add</button>
+<div id="div1"><h2>&nbsp;</h2></div>
+
+</body>
+</html>
