@@ -89,14 +89,16 @@ class List(Resource):
         ret = v1.list_namespaced_service('default')
         for i in ret.items:
             if is_mc(i.metadata):
-                pprint(i)
                 eachOutput = {}
                 eachOutput['name'] = i.metadata.name
                 eachOutput['endpoints'] = {}
 
-                for port in i.spec.ports:
-                    eachOutput['endpoints'][port.name] = str(i.status.load_balancer.ingress[0].ip) + ":" + str(port.port)
-                output.append(eachOutput)
+                try:
+                    for port in i.spec.ports:
+                        eachOutput['endpoints'][port.name] = str(i.status.load_balancer.ingress[0].ip) + ":" + str(port.port)
+                    output.append(eachOutput)
+                except:
+                    continue
         return output
 
 class Add(Resource):
