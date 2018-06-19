@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/css/bootstrap.min.css" integrity="sha384-Zug+QiDoJOrZ5t4lssLdxGhVrurbmBWopoEl+M6BdEfwnCJZtKxi1KgxUyJq13dy" crossorigin="anonymous">
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 <script>
 $(document).ready(function(){
@@ -8,46 +9,76 @@ $(document).ready(function(){
       success: function(data, textStatus, jqXHR){
         drawTable(data);
     }});
-    $("button").click(function(){
-        $.ajax({url: "/add/test2", success: function(result){
+    $("#add").click(function(){
+        $.ajax({url: "/add/" + $("#unique_name").val(), success: function(result){
             $("#div1").html(result);
         }});
     });
 });
+$(document).on("click", ".delete", function(){
+    $.ajax({url: "/delete/" + this.id, success: function(result){
+        $("#div1").html(result);
+    }});
+    //alert(this.id);
+});
 function drawTable(data) {
   for (var i=0; i<data.length; i++) {
-    drawRow(data[i])
+    //drawRow(data[i])
+    mcstats(data[i])
   }
 }
+
+function mcstats(rowData) {
+  $.ajax({url: "https://mcapi.us/server/status?ip=" + rowData.endpoints.minecraft.split(":")[0],
+    success: function(data, testStatus, jqXHR) {
+      rowData['online'] = data.online;
+      rowData['max'] = data.players.max;
+      rowData['now'] = data.players.now;
+      drawRow(rowData);
+      //alert(data.players.max);
+    }
+  });
+}
+
 function drawRow(rowData) {
   var row = $("<tr />")
   $("#MinecraftDataTable").append(row);
   row.append($("<td>" + rowData.name + "</td>"));
+  row.append($("<td>" + rowData.online + "</td>"));
   row.append($("<td>" + rowData.endpoints.minecraft + "</td>"));
   row.append($("<td>" + rowData.endpoints.rcon + "</td>"));
-  row.append($("<td><form action='/delete/" + rowData.name + "' ><button>Delete</button></form></td>"));
+  row.append($("<td>" + rowData.now + "/" + rowData.max + "</td>"));
+  row.append($("<td><button type='submit' class='delete btn btn-danger' id='" + rowData.name + "'>Delete</button></td>"));
 }
 
 </script>
 </head>
 <body>
 
-<h2>Minecraft Servers</h2>
+<div class="jumbotron">
+<h1 class="display-4">Minecraft Servers</h1>
 
-<table id="MinecraftDataTable" border=1>
+<hr class="my-4">
+
+<table id="MinecraftDataTable" class="table">
     <tr>
         <th>Name</th>
+        <th>Online</th>
         <th>Minecraft Endpoint</th>
         <th>Remote Console Endpoint</th>
+        <th>Stats</th>
         <th>Delete</th>
     </tr>
     
 </table>
-<br>&nbsp;
-<br>&nbsp;
-<br>&nbsp;
-<button>Add</button>
+
+<hr class="my-4">
+
+<input placeholder="put a basic string here" id="unique_name">
+<br>
+<button type="submit" class="btn btn-primary" id="add">Create New Minecraft Instance</button>
 <div id="div1"><h2>&nbsp;</h2></div>
+</div>
 
 </body>
 </html>
