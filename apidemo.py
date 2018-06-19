@@ -36,7 +36,7 @@ class Ping(Resource):
 api.add_resource(List, '/list')
 api.add_resource(Add, '/add')
 api.add_resource(Delete,'/delete')
-api.add_resource(Pint,'/ping')
+api.add_resource(Ping,'/ping')
 
 
 if __name__ == '__main__':
