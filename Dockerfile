@@ -1,9 +1,10 @@
 FROM python:3.6.5-jessie
 
-RUN mkdir /app
+RUN mkdir -p /app/templates
 
 COPY requirements.txt /app
 COPY apidemo.py /app
+COPY templates/index.html /app/templates
 
 WORKDIR /app
 

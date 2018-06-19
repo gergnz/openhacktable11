@@ -11,7 +11,7 @@ spec:
     spec:
       containers:
       - name: mcapi
-        image: gergnz/openhacktable11:0.11
+        image: gergnz/openhacktable11:0.14
         ports:
         - name: mcapi
           containerPort: 5002
