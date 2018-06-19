@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: mcapi
 spec:
-  replicas: 1
+  replicas: 2
   template:
     metadata:
       labels:
@@ -11,7 +11,7 @@ spec:
     spec:
       containers:
       - name: mcapi
-        image: gergnz/openhacktable11:0.14
+        image: gergnz/openhacktable11:0.15
         ports:
         - name: mcapi
           containerPort: 5002
