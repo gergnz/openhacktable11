@@ -1,0 +1,10 @@
+<html>
+    <body>
+        <h1>Minecreaft Servers</h1>
+        <ul>
+        {{range .}}
+            <li>{{.Name}}: {{.Endpoints.Minecraft}}, {{.Endpoints.Rcon}}</li>
+        {{end}}
+        </ul>
+    </body>
+</html>
