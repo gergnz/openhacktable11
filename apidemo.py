@@ -1,6 +1,7 @@
 from flask import Flask
 from flask_restful import Resource, Api
 from kubernetes import client, config
+from pprint import pprint
 import json
 app = Flask(__name__)
 api = Api(app)
@@ -11,14 +12,18 @@ class List(Resource):
         output = []
         config.load_kube_config()
         v1 = client.CoreV1Api()
-        print("Listing pods with their IPs:")
-        ret = v1.list_pod_for_all_namespaces(watch=False)
+        ret = v1.list_namespaced_service('default')
 
         for i in ret.items:
-            eachOutput = {}
-            eachOutput['name']=i.metadata.name
-            eachOutput['ip']=i.status.pod_ip
-            output.append(eachOutput)
+            pprint(i)
+            if i.metadata.name =="hackerone":
+                eachOutput = {}
+                eachOutput['name'] = i.metadata.name
+                eachOutput['endpoints'] = {}
+                for port in i.spec.ports:
+                    eachOutput['endpoints'][port.name] = str(i.status.load_balancer.ingress[0].ip) + ":" + str(port.port)
+                output.append(eachOutput)
+
         return output
 
 class Add(Resource):
@@ -27,7 +32,8 @@ class Add(Resource):
 
 class Delete(Resource):
     def get(self):
-        return "Deleting a new resource"
+
+       return "Deleting"
 
 class Ping(Resource):
     def get(self):
