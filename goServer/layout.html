@@ -1,0 +1,28 @@
+<html>
+    <body>
+        <h1>Minecreaft Cluster Console</h1>
+
+        <div>
+            <button>Create server</button>
+        </div>
+
+        <table style="border:1">
+            <thead>
+                <td>Server</td>
+                <td>Game</td>
+                <td>RCon</td>
+                <td>Players</td>
+                <td></td>
+            </thead>
+            <tbody>
+                {{range .}}
+                    <td>{{.Name}}</td>
+                    <td>{{.Endpoints.Minecraft}}</td>
+                    <td>{{.Endpoints.Rcon}}</td>
+                    <td>{{.Players.Current}}/{{.Players.Capacity}}</td>
+                    <td><button>Delete</button></td>
+                {{end}}
+            </tbody>
+        </table>
+    </body>
+</html>
