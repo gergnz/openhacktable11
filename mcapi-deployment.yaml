@@ -9,9 +9,11 @@ spec:
       labels:
         app: mcapi
     spec:
+      imagePullSecrets:
+        - name: acr-openhacktable11
       containers:
       - name: mcapi
-        image: gergnz/openhacktable11:0.15
+        image: openhacktable11.azurecr.io/openhacktable11:0.17
         ports:
         - name: mcapi
           containerPort: 5002
