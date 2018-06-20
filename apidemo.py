@@ -49,7 +49,7 @@ def create_deployment_object(unique_name):
     template = client.V1PodTemplateSpec(
         metadata=client.V1ObjectMeta(labels={"app": unique_name, "type" : "minecraft"}),
         spec=client.V1PodSpec(containers=[container],
-        volumes=[client.V1Volume(name=unique_name, persistent_volume_claim = (client.V1PersistentVolumeClaimVolumeSource(claim_name="azure-managed-disk")))]))
+        volumes=[client.V1Volume(name=unique_name, persistent_volume_claim = (client.V1PersistentVolumeClaimVolumeSource(claim_name="azure-managed-disk-"+unique_name)))]))
     # Create the specification of deployment
     spec = client.ExtensionsV1beta1DeploymentSpec(
         replicas=1,
