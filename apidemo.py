@@ -70,6 +70,32 @@ def create_deployment(api_instance, deployment):
         namespace="default")
     return "Deployment created. status= {}".format(str(api_response.status))
 
+def create_vpc_object(unique_name):
+
+    metadata = client.V1ObjectMeta(
+        name = "azure-managed-disk-" + unique_name,
+        annotations = {"volume.beta.kubernetes.io/storage-class": "managed-premium"}
+    )
+
+    spec = client.V1PersistentVolumeClaimSpec(
+        access_modes = ["ReadWriteOnce"],
+        resources = client.V1ResourceRequirements(requests={"storage": "5Gi"})
+    )
+
+    body = client.V1PersistentVolumeClaim(
+        api_version="v1",
+        kind="PersistentVolumeClaim",
+        metadata=metadata,
+        spec=spec
+    )
+
+    return body
+
+def create_vpc(api_instance, vpc_object):
+    api_response = api_instance.create_namespaced_persistent_volume_claim(
+        body=vpc_object,
+        namespace="default")
+    return "VPC created. status= {}".format(str(api_response.status))
 
 def is_mc(metadata):
     if hasattr(metadata, 'labels'):
@@ -110,15 +136,17 @@ class Add(Resource):
             config.load_kube_config()
         extensions_v1beta1 = client.ExtensionsV1beta1Api()
         coreV1 = client.CoreV1Api()
+        vpc_object = create_vpc_object(unique_name)
         deployObject = create_deployment_object(unique_name)
         service_obj = create_service_object(unique_name)
 
+
+        vpc_status = create_vpc(coreV1, vpc_object)
         status =create_deployment(extensions_v1beta1,deployObject)
         service_status = create_service(coreV1,service_obj)
-        return status + "\n" + service_status
+        return vpc_status + "\n" + status + "\n" + service_status
 
 def delete_deployment(api_instance,unique_name):
-    # Delete deployment
     api_response = api_instance.delete_namespaced_deployment(
         name=unique_name,
         namespace="default",
@@ -128,14 +156,22 @@ def delete_deployment(api_instance,unique_name):
     return "Deployment deleted. status={}".format(str(api_response.status))
 
 def delete_service(api_instance,unique_name):
-    # Delete deployment
     api_response = api_instance.delete_namespaced_service(
         name=unique_name,
         namespace="default",
         body=client.V1DeleteOptions(
             propagation_policy='Foreground',
             grace_period_seconds=5))
-    return "Deployment deleted. status={}".format(str(api_response.status))
+    return "Service deleted. status={}".format(str(api_response.status))
+
+def delete_vpc(api_instance,unique_name):
+    api_response = api_instance.delete_namespaced_persistent_volume_claim(
+        name = "azure-managed-disk-" + unique_name,
+        namespace="default",
+        body=client.V1DeleteOptions(
+            propagation_policy='Foreground',
+            grace_period_seconds=5))
+    return "VPC deleted. status={}".format(str(api_response.status))
 
 class Delete(Resource):
     def get(self,unique_name):
@@ -147,8 +183,9 @@ class Delete(Resource):
         coreV1 = client.CoreV1Api()
         status = delete_deployment(extensions_v1beta1,unique_name)
         service_status = delete_service(coreV1,unique_name)
+        vpc_status = delete_vpc(coreV1,unique_name)
 
-        return status + "\n" + service_status
+        return vpc_status + "\n" + status + "\n" + service_status
 
 class Ping(Resource):
     def get(self):
